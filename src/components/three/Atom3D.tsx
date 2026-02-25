@@ -33,7 +33,6 @@ export function Atom3D({ element, position, showLabel = true }: Atom3DProps) {
             color="#e8e8e8"
             anchorX="center"
             anchorY="bottom"
-            font="/fonts/geist-mono.woff2"
             outlineWidth={0.02}
             outlineColor="#000000"
           >

@@ -13,7 +13,7 @@ export function PointGroupInfo({ molecule, table }: PointGroupInfoProps) {
     : 3 * molecule.atoms.length - 6;
 
   return (
-    <div className="term-panel">
+    <div className="term-panel" role="region" aria-label={`Point group ${table.pointGroup}`}>
       <div className="term-header">point group</div>
       <div className="p-3 space-y-2 relative z-10">
         <div className="flex items-baseline gap-3">

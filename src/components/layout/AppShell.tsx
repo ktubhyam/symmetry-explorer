@@ -8,6 +8,8 @@ import { useExplorerStore } from '@/lib/store';
 import { MOLECULES } from '@/lib/data/molecules';
 import { CHARACTER_TABLES } from '@/lib/data/characterTables';
 import { getSelectionRules } from '@/lib/chemistry/selectionRules';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useURLState } from '@/hooks/useURLState';
 
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { MoleculePicker } from '@/components/ui/MoleculePicker';
@@ -44,6 +46,10 @@ const TABS: { key: SidebarTab; label: string }[] = [
 export function AppShell() {
   const selectedId = useExplorerStore((s) => s.selectedMoleculeId);
 
+  // Wire in keyboard shortcuts and URL state sync
+  useKeyboardShortcuts();
+  useURLState();
+
   const molecule = useMemo(
     () => MOLECULES.find((m) => m.id === selectedId) ?? MOLECULES[0],
     [selectedId]
@@ -62,13 +68,50 @@ export function AppShell() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <Header pointGroup={table.pointGroup} />
+      <Header
+        pointGroup={table.pointGroup}
+        moleculeName={molecule.name}
+        formula={molecule.formula}
+      />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col lg:flex-row gap-px bg-border">
         {/* Left: 3D Viewer + Selection Rules */}
-        <div className="flex-1 lg:w-[60%] flex flex-col min-h-[400px] lg:min-h-0">
+        <main
+          className="flex-1 lg:w-[60%] flex flex-col min-h-[400px] lg:min-h-0"
+          aria-label="3D molecule viewer"
+        >
           <div className="flex-1 relative">
+            {/* Molecule name overlay */}
+            <div className="absolute top-3 left-3 z-10 pointer-events-none">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={molecule.id}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="text-sm font-mono text-accent font-bold">
+                    {molecule.formula}
+                  </div>
+                  <div className="text-[10px] text-[#666]">
+                    {molecule.name}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Keyboard hints */}
+            <div className="absolute bottom-3 right-3 z-10 pointer-events-none hidden lg:flex gap-1.5 items-center">
+              <span className="kbd">←→</span>
+              <span className="text-[9px] text-[#444]">cycle</span>
+              <span className="kbd">Space</span>
+              <span className="text-[9px] text-[#444]">elements</span>
+              <span className="kbd">Esc</span>
+              <span className="text-[9px] text-[#444]">stop</span>
+            </div>
+
             <ErrorBoundary
               fallback={
                 <div className="w-full h-full flex items-center justify-center bg-black">
@@ -105,17 +148,11 @@ export function AppShell() {
               hasInversion={table.hasInversion}
             />
           </div>
-        </div>
+        </main>
 
         {/* Right: Sidebar panels */}
-        <DesktopSidebar
-          molecule={molecule}
-          table={table}
-        />
-        <MobileTabs
-          molecule={molecule}
-          table={table}
-        />
+        <DesktopSidebar molecule={molecule} table={table} />
+        <MobileTabs molecule={molecule} table={table} />
       </div>
     </div>
   );
@@ -123,17 +160,31 @@ export function AppShell() {
 
 /* ─── Header ─── */
 
-function Header({ pointGroup }: { pointGroup: string }) {
+function Header({
+  pointGroup,
+  moleculeName,
+  formula,
+}: {
+  pointGroup: string;
+  moleculeName: string;
+  formula: string;
+}) {
   return (
-    <header className="flex items-center justify-between px-4 py-2 border-b border-border bg-surface shrink-0">
+    <header
+      className="flex items-center justify-between px-4 py-2 border-b border-border bg-surface shrink-0"
+      role="banner"
+    >
       <div className="flex items-center gap-3">
-        <span className="text-xs font-mono text-accent">
+        <span className="text-xs font-mono text-accent text-shimmer">
           symmetry-explorer
         </span>
         <span className="text-[10px] text-[#555] font-mono">v1.0</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs font-mono px-2 py-0.5 border border-accent/30 text-accent bg-accent/5">
+        <span className="text-[10px] font-mono text-[#666] hidden sm:inline">
+          {moleculeName}
+        </span>
+        <span className="text-xs font-mono px-2 py-0.5 border border-accent/30 text-accent bg-accent/5 shine-border">
           {pointGroup}
         </span>
       </div>
@@ -142,6 +193,7 @@ function Header({ pointGroup }: { pointGroup: string }) {
         target="_blank"
         rel="noopener noreferrer"
         className="text-[10px] font-mono text-[#555] hover:text-accent transition-colors"
+        aria-label="Visit tubhyam.dev"
       >
         tubhyam.dev →
       </a>
@@ -158,7 +210,10 @@ interface SidebarProps {
 
 function DesktopSidebar({ molecule, table }: SidebarProps) {
   return (
-    <div className="hidden lg:block lg:w-[40%] overflow-y-auto bg-background">
+    <aside
+      className="hidden lg:block lg:w-[40%] overflow-y-auto bg-background"
+      aria-label="Analysis panels"
+    >
       <div className="space-y-px">
         <PointGroupInfo molecule={molecule} table={table} />
         <MoleculePicker />
@@ -171,7 +226,7 @@ function DesktopSidebar({ molecule, table }: SidebarProps) {
           linear={molecule.linear}
         />
       </div>
-    </div>
+    </aside>
   );
 }
 
@@ -184,10 +239,17 @@ function MobileTabs({ molecule, table }: SidebarProps) {
   return (
     <div className="lg:hidden bg-background">
       {/* Tab bar */}
-      <div className="flex border-b border-border">
+      <nav
+        className="flex border-b border-border"
+        role="tablist"
+        aria-label="Analysis panels"
+      >
         {TABS.map((tab) => (
           <button
             key={tab.key}
+            role="tab"
+            aria-selected={sidebarTab === tab.key}
+            aria-controls={`panel-${tab.key}`}
             onClick={() => setSidebarTab(tab.key)}
             className={`flex-1 py-2 text-[10px] font-mono uppercase tracking-wider transition-colors ${
               sidebarTab === tab.key
@@ -198,12 +260,14 @@ function MobileTabs({ molecule, table }: SidebarProps) {
             {tab.label}
           </button>
         ))}
-      </div>
+      </nav>
 
       {/* Tab content */}
       <AnimatePresence mode="wait">
         <motion.div
           key={sidebarTab}
+          role="tabpanel"
+          id={`panel-${sidebarTab}`}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}

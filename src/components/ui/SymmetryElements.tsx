@@ -10,7 +10,7 @@ interface SymmetryElementsProps {
 const TYPE_COLORS: Record<string, string> = {
   axis: 'text-cyan',
   plane: 'text-accent',
-  center: 'text-center',
+  center: 'text-[#A78BFA]',
   improper: 'text-[#A78BFA]',
 };
 
@@ -26,19 +26,21 @@ export function SymmetryElements({ table }: SymmetryElementsProps) {
   const isVisible = (label: string) => showAll || visibleElements.has(label);
 
   return (
-    <div className="term-panel">
+    <div className="term-panel" role="region" aria-label="Symmetry elements">
       <div className="term-header">
         <span className="flex-1">symmetry elements</span>
         <button
           onClick={showAllElements}
           className="text-[9px] text-accent hover:text-accent-glow transition-colors"
+          aria-label="Show all symmetry elements"
         >
           all
         </button>
-        <span className="text-border-bright">|</span>
+        <span className="text-border-bright" aria-hidden="true">|</span>
         <button
           onClick={hideAllElements}
           className="text-[9px] text-[#666] hover:text-foreground transition-colors"
+          aria-label="Hide all symmetry elements"
         >
           none
         </button>
@@ -47,9 +49,9 @@ export function SymmetryElements({ table }: SymmetryElementsProps) {
         {table.symmetryElements.length === 0 ? (
           <p className="text-[11px] text-[#555]">No symmetry elements (C₁)</p>
         ) : (
-          table.symmetryElements.map((el) => (
+          table.symmetryElements.map((el, i) => (
             <div
-              key={el.label}
+              key={`${el.label}-${i}`}
               className="flex items-center gap-2 group"
             >
               <button
@@ -59,6 +61,9 @@ export function SymmetryElements({ table }: SymmetryElementsProps) {
                     ? 'border-accent bg-accent/30'
                     : 'border-border-bright bg-transparent'
                 }`}
+                role="checkbox"
+                aria-checked={isVisible(el.label)}
+                aria-label={`Toggle ${el.label} visibility`}
               />
               <span
                 className={`text-xs font-mono flex-1 ${
@@ -67,10 +72,12 @@ export function SymmetryElements({ table }: SymmetryElementsProps) {
               >
                 {el.label}
               </span>
+              <span className="text-[9px] text-[#444] capitalize">{el.type}</span>
               <button
                 onClick={() => playOperation(el.label)}
                 disabled={isAnimating}
                 className="text-[10px] text-[#555] hover:text-cyan opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
+                aria-label={`Animate ${el.label} operation`}
               >
                 ▶
               </button>

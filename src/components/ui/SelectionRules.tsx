@@ -16,7 +16,7 @@ export function SelectionRules({
   const ratioPercent = Math.round(result.ratio * 100);
 
   return (
-    <div className="term-panel">
+    <div className="term-panel" role="region" aria-label="Selection rules">
       <div className="term-header">selection rules</div>
       <div className="p-3 space-y-3 relative z-10">
         {/* Mode counts */}

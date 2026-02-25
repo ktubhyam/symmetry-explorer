@@ -1,3 +1,6 @@
+# vercel
+.vercel
+
 # dependencies
 /node_modules
 /.pnp

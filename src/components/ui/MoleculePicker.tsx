@@ -19,7 +19,7 @@ export function MoleculePicker() {
   }, []);
 
   return (
-    <div className="term-panel">
+    <div className="term-panel" role="region" aria-label="Molecule library">
       <div className="term-header">molecules</div>
       <div className="p-3 space-y-3 relative z-10">
         {Object.entries(grouped).map(([pg, mols]) => (

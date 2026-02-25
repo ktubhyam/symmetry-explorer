@@ -13,7 +13,7 @@ export function CharacterTable({ table }: CharacterTableProps) {
   const setHighlightedIrrep = useExplorerStore((s) => s.setHighlightedIrrep);
 
   return (
-    <div className="term-panel">
+    <div className="term-panel" role="region" aria-label={`Character table for ${table.pointGroup}`}>
       <div className="term-header">
         <span className="flex-1">character table</span>
         <span className="text-[9px] text-[#555]">{table.pointGroup}</span>

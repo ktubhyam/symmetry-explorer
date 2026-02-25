@@ -37,7 +37,7 @@ export function ModeBreakdown({ table, nAtoms, linear }: ModeBreakdownProps) {
   );
 
   return (
-    <div className="term-panel">
+    <div className="term-panel" role="region" aria-label="Vibrational mode breakdown">
       <div className="term-header">
         <span className="flex-1">mode breakdown</span>
         <span className="text-[9px] text-[#555]">{totalModes} modes</span>

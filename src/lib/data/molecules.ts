@@ -1,7 +1,7 @@
 import type { MoleculeData } from '@/types';
 
 /**
- * 3D molecular geometry data for ~19 molecules covering 15 different
+ * 3D molecular geometry data for ~27 molecules covering 15 different
  * point groups (Schoenflies notation). All coordinates are idealized
  * geometries in Angstroms, centered at (or very near) the origin.
  */
@@ -14,10 +14,10 @@ export const MOLECULES: MoleculeData[] = [
     pointGroup: 'C1',
     atoms: [
       { element: 'C',  x:  0.00,  y:  0.00,  z:  0.00 },
-      { element: 'H',  x:  0.63,  y:  0.63,  z:  0.63 },
-      { element: 'F',  x: -0.63,  y: -0.63,  z:  0.63 },
-      { element: 'Cl', x: -0.63,  y:  0.63,  z: -0.63 },
-      { element: 'Br', x:  0.63,  y: -0.63,  z: -0.63 },
+      { element: 'H',  x:  0.63,  y:  0.63,  z:  0.63 },  // C-H ~1.09A
+      { element: 'F',  x: -0.78,  y: -0.78,  z:  0.78 },  // C-F ~1.35A
+      { element: 'Cl', x: -1.02,  y:  1.02,  z: -1.02 },  // C-Cl ~1.77A
+      { element: 'Br', x:  1.12,  y: -1.12,  z: -1.12 },  // C-Br ~1.94A
     ],
     bonds: [
       [0, 1], // C-H
@@ -42,6 +42,29 @@ export const MOLECULES: MoleculeData[] = [
     bonds: [
       [0, 1], // O-H
       [0, 2], // O-Cl
+    ],
+    linear: false,
+  },
+
+  // SOCl2 — Thionyl chloride — Cs
+  // Pyramidal geometry: S at origin, O along +z, two Cl atoms in xz mirror plane
+  // S=O ~1.44 A, S-Cl ~2.07 A, O-S-Cl ~106°, Cl-S-Cl ~96°
+  // Mirror plane is xz; the lone pair on S points in the -y direction
+  {
+    id: 'socl2',
+    name: 'Thionyl Chloride',
+    formula: 'SOCl₂',
+    pointGroup: 'Cs',
+    atoms: [
+      { element: 'S',  x:  0.000, y:  0.000, z:  0.000 },
+      { element: 'O',  x:  0.000, y:  0.863, z:  1.140 },
+      { element: 'Cl', x:  1.607, y: -0.540, z: -0.574 },
+      { element: 'Cl', x: -1.607, y: -0.540, z: -0.574 },
+    ],
+    bonds: [
+      [0, 1], // S=O
+      [0, 2], // S-Cl
+      [0, 3], // S-Cl
     ],
     linear: false,
   },
@@ -133,6 +156,55 @@ export const MOLECULES: MoleculeData[] = [
     linear: false,
   },
 
+  // ClF3 — Chlorine trifluoride — C2v
+  // T-shaped (from trigonal bipyramidal with 2 lone pairs in equatorial)
+  // Cl at origin, 2 axial F along z-axis (Cl-F ~1.70 A), 1 equatorial F along +y (Cl-F ~1.60 A)
+  // C2 axis along y, molecule in yz plane
+  {
+    id: 'clf3',
+    name: 'Chlorine Trifluoride',
+    formula: 'ClF₃',
+    pointGroup: 'C2v',
+    atoms: [
+      { element: 'Cl', x:  0.000, y:  0.000, z:  0.000 },
+      { element: 'F',  x:  0.000, y:  0.000, z:  1.698 },
+      { element: 'F',  x:  0.000, y:  0.000, z: -1.698 },
+      { element: 'F',  x:  0.000, y:  1.598, z:  0.000 },
+    ],
+    bonds: [
+      [0, 1], // Cl-F (axial)
+      [0, 2], // Cl-F (axial)
+      [0, 3], // Cl-F (equatorial)
+    ],
+    linear: false,
+  },
+
+  // cis-C2H2Cl2 — cis-1,2-Dichloroethylene — C2v
+  // Planar in yz plane. C=C along z, H and Cl on same side.
+  // C=C ~1.33 A, C-H ~1.08 A, C-Cl ~1.73 A, H-C=C ~120°, Cl-C=C ~124°
+  {
+    id: 'cis-c2h2cl2',
+    name: 'cis-1,2-Dichloroethylene',
+    formula: 'cis-C₂H₂Cl₂',
+    pointGroup: 'C2v',
+    atoms: [
+      { element: 'C',  x:  0.000, y:  0.665, z:  0.000 },
+      { element: 'C',  x:  0.000, y: -0.665, z:  0.000 },
+      { element: 'H',  x:  0.000, y:  1.245, z:  0.935 },
+      { element: 'H',  x:  0.000, y: -1.245, z:  0.935 },
+      { element: 'Cl', x:  0.000, y:  1.465, z: -1.410 },
+      { element: 'Cl', x:  0.000, y: -1.465, z: -1.410 },
+    ],
+    bonds: [
+      [0, 1], // C=C
+      [0, 2], // C-H
+      [0, 4], // C-Cl
+      [1, 3], // C-H
+      [1, 5], // C-Cl
+    ],
+    linear: false,
+  },
+
   // ─── C2h ─────────────────────────────────────────────────────────
   {
     id: 'trans-c2h2cl2',
@@ -194,6 +266,50 @@ export const MOLECULES: MoleculeData[] = [
       [0, 2], // C-Cl
       [0, 3], // C-Cl
       [0, 4], // C-Cl
+    ],
+    linear: false,
+  },
+
+  // NF3 — Nitrogen trifluoride — C3v
+  // Pyramidal like NH3. N-F ~1.37 A, F-N-F ~102.2°
+  // N at apex along +z, 3 F below in a cone
+  {
+    id: 'nf3',
+    name: 'Nitrogen Trifluoride',
+    formula: 'NF₃',
+    pointGroup: 'C3v',
+    atoms: [
+      { element: 'N', x:  0.000, y:  0.000, z:  0.404 },
+      { element: 'F', x:  0.000, y:  1.100, z: -0.135 },
+      { element: 'F', x:  0.953, y: -0.550, z: -0.135 },
+      { element: 'F', x: -0.953, y: -0.550, z: -0.135 },
+    ],
+    bonds: [
+      [0, 1], // N-F
+      [0, 2], // N-F
+      [0, 3], // N-F
+    ],
+    linear: false,
+  },
+
+  // PCl3 — Phosphorus trichloride — C3v
+  // Pyramidal. P-Cl ~2.04 A, Cl-P-Cl ~100.3°
+  // P at apex along +z, 3 Cl below
+  {
+    id: 'pcl3',
+    name: 'Phosphorus Trichloride',
+    formula: 'PCl₃',
+    pointGroup: 'C3v',
+    atoms: [
+      { element: 'P',  x:  0.000, y:  0.000, z:  0.510 },
+      { element: 'Cl', x:  0.000, y:  1.634, z: -0.170 },
+      { element: 'Cl', x:  1.415, y: -0.817, z: -0.170 },
+      { element: 'Cl', x: -1.415, y: -0.817, z: -0.170 },
+    ],
+    bonds: [
+      [0, 1], // P-Cl
+      [0, 2], // P-Cl
+      [0, 3], // P-Cl
     ],
     linear: false,
   },
@@ -310,6 +426,95 @@ export const MOLECULES: MoleculeData[] = [
       [0, 1], // B-F
       [0, 2], // B-F
       [0, 3], // B-F
+    ],
+    linear: false,
+  },
+
+  // PF5 — Phosphorus pentafluoride — D3h
+  // Trigonal bipyramidal. P at center, 3 equatorial F in xy plane at 120°
+  // (P-F_eq ~1.53 A), 2 axial F along z (P-F_ax ~1.58 A)
+  {
+    id: 'pf5',
+    name: 'Phosphorus Pentafluoride',
+    formula: 'PF₅',
+    pointGroup: 'D3h',
+    atoms: [
+      { element: 'P', x:  0.000, y:  0.000, z:  0.000 },
+      // equatorial F (in xy plane, 120° apart)
+      { element: 'F', x:  0.000, y:  1.534, z:  0.000 },
+      { element: 'F', x:  1.328, y: -0.767, z:  0.000 },
+      { element: 'F', x: -1.328, y: -0.767, z:  0.000 },
+      // axial F (along z)
+      { element: 'F', x:  0.000, y:  0.000, z:  1.577 },
+      { element: 'F', x:  0.000, y:  0.000, z: -1.577 },
+    ],
+    bonds: [
+      [0, 1], // P-F (eq)
+      [0, 2], // P-F (eq)
+      [0, 3], // P-F (eq)
+      [0, 4], // P-F (ax)
+      [0, 5], // P-F (ax)
+    ],
+    linear: false,
+  },
+
+  // SO3 — Sulfur trioxide — D3h
+  // Trigonal planar. S=O ~1.42 A, O-S-O = 120°
+  {
+    id: 'so3',
+    name: 'Sulfur Trioxide',
+    formula: 'SO₃',
+    pointGroup: 'D3h',
+    atoms: [
+      { element: 'S', x:  0.000, y:  0.000, z: 0 },
+      { element: 'O', x:  0.000, y:  1.420, z: 0 },
+      { element: 'O', x:  1.230, y: -0.710, z: 0 },
+      { element: 'O', x: -1.230, y: -0.710, z: 0 },
+    ],
+    bonds: [
+      [0, 1], // S=O
+      [0, 2], // S=O
+      [0, 3], // S=O
+    ],
+    linear: false,
+  },
+
+  // Cyclopropane — C3H6 — D3h
+  // Equilateral triangle of C atoms in xy plane (C-C ~1.51 A, side = 1.51)
+  // Each C has 2 H atoms: one above and one below the plane (C-H ~1.09 A)
+  // Triangle centroid at origin, C-C = 1.51 A → circumradius = 1.51/√3 ≈ 0.872
+  {
+    id: 'cyclopropane',
+    name: 'Cyclopropane',
+    formula: 'C₃H₆',
+    pointGroup: 'D3h',
+    atoms: [
+      // Carbon ring (circumradius ~0.872 A)
+      { element: 'C', x:  0.000, y:  0.872, z:  0.000 },
+      { element: 'C', x:  0.755, y: -0.436, z:  0.000 },
+      { element: 'C', x: -0.755, y: -0.436, z:  0.000 },
+      // H atoms on C0 (bisector direction: +y)
+      { element: 'H', x:  0.000, y:  1.472, z:  0.893 },
+      { element: 'H', x:  0.000, y:  1.472, z: -0.893 },
+      // H atoms on C1 (bisector direction: +x, -y at 120°)
+      { element: 'H', x:  1.275, y: -1.036, z:  0.893 },
+      { element: 'H', x:  1.275, y: -1.036, z: -0.893 },
+      // H atoms on C2 (bisector direction: -x, -y at 240°)
+      { element: 'H', x: -1.275, y: -1.036, z:  0.893 },
+      { element: 'H', x: -1.275, y: -1.036, z: -0.893 },
+    ],
+    bonds: [
+      // C-C ring
+      [0, 1],
+      [1, 2],
+      [2, 0],
+      // C-H bonds
+      [0, 3],
+      [0, 4],
+      [1, 5],
+      [1, 6],
+      [2, 7],
+      [2, 8],
     ],
     linear: false,
   },

@@ -14,7 +14,7 @@ export function OperationPlayer({ table }: OperationPlayerProps) {
   const stopAnimation = useExplorerStore((s) => s.stopAnimation);
 
   return (
-    <div className="term-panel">
+    <div className="term-panel" role="region" aria-label="Symmetry operations">
       <div className="term-header">
         <span className="flex-1">operations</span>
         {isAnimating && (

@@ -66,14 +66,14 @@ function MoleculeScene({ molecule, table }: MoleculeSceneProps) {
       </group>
 
       {/* Symmetry element overlays (not animated with molecule) */}
-      {table.symmetryElements.map((el) => {
+      {table.symmetryElements.map((el, i) => {
         if (!isVisible(el.label)) return null;
 
         switch (el.type) {
           case 'axis':
             return (
               <SymmetryAxis
-                key={el.label}
+                key={`${el.label}-${i}`}
                 direction={el.direction ?? [0, 1, 0]}
                 label={el.label}
                 order={el.order}
@@ -82,17 +82,17 @@ function MoleculeScene({ molecule, table }: MoleculeSceneProps) {
           case 'plane':
             return (
               <SymmetryPlane
-                key={el.label}
+                key={`${el.label}-${i}`}
                 normal={el.normal ?? [0, 0, 1]}
                 label={el.label}
               />
             );
           case 'center':
-            return <InversionCenter key={el.label} />;
+            return <InversionCenter key={`${el.label}-${i}`} />;
           case 'improper':
             return (
               <SymmetryAxis
-                key={el.label}
+                key={`${el.label}-${i}`}
                 direction={el.direction ?? [0, 1, 0]}
                 label={el.label}
                 order={el.order}
