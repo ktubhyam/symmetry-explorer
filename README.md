@@ -2,6 +2,8 @@
 
 Visualize molecular point groups, symmetry operations, and character tables. Understand how symmetry determines spectroscopic selection rules.
 
+**[Project Page](https://tubhyam.dev/simulations/symmetry-explorer)**
+
 ## Features
 
 - **3D molecule viewer** with interactive symmetry element overlays (axes, planes, inversion center)
