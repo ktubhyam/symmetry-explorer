@@ -2,6 +2,11 @@
 
 import { create } from 'zustand';
 
+interface ActiveMode {
+  irrep: string;
+  label: string;
+}
+
 interface ExplorerStore {
   // Molecule selection
   selectedMoleculeId: string;
@@ -13,11 +18,16 @@ interface ExplorerStore {
   showAllElements: () => void;
   hideAllElements: () => void;
 
-  // Animation state
+  // Symmetry operation animation state
   activeOperation: string | null;
   isAnimating: boolean;
   playOperation: (label: string) => void;
   stopAnimation: () => void;
+
+  // Vibrational mode animation
+  activeMode: ActiveMode | null;
+  playMode: (irrep: string, label: string) => void;
+  stopMode: () => void;
 
   // Character table highlight
   highlightedIrrep: string | null;
@@ -37,6 +47,7 @@ export const useExplorerStore = create<ExplorerStore>((set) => ({
       visibleElements: new Set<string>(),
       activeOperation: null,
       isAnimating: false,
+      activeMode: null,
       highlightedIrrep: null,
     }),
 
@@ -59,9 +70,15 @@ export const useExplorerStore = create<ExplorerStore>((set) => ({
   activeOperation: null,
   isAnimating: false,
   playOperation: (label) =>
-    set({ activeOperation: label, isAnimating: true }),
+    set({ activeOperation: label, isAnimating: true, activeMode: null }),
   stopAnimation: () =>
     set({ activeOperation: null, isAnimating: false }),
+
+  activeMode: null,
+  playMode: (irrep, label) =>
+    set({ activeMode: { irrep, label }, activeOperation: null, isAnimating: false }),
+  stopMode: () =>
+    set({ activeMode: null }),
 
   highlightedIrrep: null,
   setHighlightedIrrep: (label) =>

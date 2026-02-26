@@ -19,6 +19,7 @@ import { SelectionRules } from '@/components/ui/SelectionRules';
 import { PointGroupInfo } from '@/components/ui/PointGroupInfo';
 import { ModeBreakdown } from '@/components/ui/ModeBreakdown';
 import { OperationPlayer } from '@/components/ui/OperationPlayer';
+import { PointGroupFlowchart } from '@/components/ui/PointGroupFlowchart';
 
 const MoleculeViewer = dynamic(
   () => import('@/components/three/MoleculeViewer'),
@@ -34,14 +35,35 @@ const MoleculeViewer = dynamic(
   }
 );
 
-type SidebarTab = 'molecules' | 'elements' | 'table' | 'rules';
+type SidebarTab = 'molecules' | 'elements' | 'table' | 'rules' | 'identify';
 
 const TABS: { key: SidebarTab; label: string }[] = [
   { key: 'molecules', label: 'molecules' },
   { key: 'elements', label: 'elements' },
   { key: 'table', label: 'table' },
   { key: 'rules', label: 'rules' },
+  { key: 'identify', label: 'identify' },
 ];
+
+function ModeIndicator() {
+  const activeMode = useExplorerStore((s) => s.activeMode);
+  const stopMode = useExplorerStore((s) => s.stopMode);
+
+  if (!activeMode) return null;
+
+  return (
+    <div className="absolute top-3 right-3 z-10">
+      <button
+        onClick={stopMode}
+        className="flex items-center gap-2 px-2 py-1 bg-cyan/10 border border-cyan/30 text-cyan text-[10px] font-mono hover:bg-cyan/20 transition-colors"
+      >
+        <span className="animate-pulse-glow">&#9654;</span>
+        <span className="truncate max-w-[120px]">{activeMode.label}</span>
+        <span className="text-[#555]">&#x2715;</span>
+      </button>
+    </div>
+  );
+}
 
 export function AppShell() {
   const selectedId = useExplorerStore((s) => s.selectedMoleculeId);
@@ -101,6 +123,9 @@ export function AppShell() {
                 </motion.div>
               </AnimatePresence>
             </div>
+
+            {/* Active mode indicator */}
+            <ModeIndicator />
 
             {/* Keyboard hints */}
             <div className="absolute bottom-3 right-3 z-10 pointer-events-none hidden lg:flex gap-1.5 items-center">
@@ -224,7 +249,9 @@ function DesktopSidebar({ molecule, table }: SidebarProps) {
           table={table}
           nAtoms={molecule.atoms.length}
           linear={molecule.linear}
+          moleculeId={molecule.id}
         />
+        <PointGroupFlowchart />
       </div>
     </aside>
   );
@@ -291,8 +318,10 @@ function MobileTabs({ molecule, table }: SidebarProps) {
               table={table}
               nAtoms={molecule.atoms.length}
               linear={molecule.linear}
+              moleculeId={molecule.id}
             />
           )}
+          {sidebarTab === 'identify' && <PointGroupFlowchart />}
         </motion.div>
       </AnimatePresence>
     </div>
